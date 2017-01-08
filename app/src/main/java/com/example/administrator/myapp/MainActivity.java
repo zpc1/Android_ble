@@ -134,30 +134,36 @@ public class MainActivity extends AppCompatActivity {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.e(TAG, "成功发现服务");
 
+                BluetoothGattService service = mbluetoothGatt.getService(UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb"));
+                characteristic = service.getCharacteristic(UUID.fromString("0000fff6-0000-1000-8000-00805f9b34fb"));
+                gatt.setCharacteristicNotification(characteristic, true);
+
                 List<BluetoothGattService> supportedGattServices =mbluetoothGatt.getServices();
-
-                for(int i=0;i<supportedGattServices.size();i++){
-
-                    Log.e("AAAAA","1:BluetoothGattService UUID=:"+
-                            supportedGattServices.get(i).getUuid());
-
-                    BluetoothGattService service = mbluetoothGatt.getService(UUID.fromString(supportedGattServices.get(i).getUuid().toString()));
-
-                    List<BluetoothGattCharacteristic> listGattCharacteristic=
-                            supportedGattServices.get(i).getCharacteristics();
-                    for(int j=0;j<listGattCharacteristic.size();j++){
-                        Log.e("a","2:   BluetoothGattCharacteristic UUID=:"
-                                +listGattCharacteristic.get(j).getUuid());
-
-                        if (service != null) {
-                            characteristic = service.getCharacteristic(UUID.fromString(listGattCharacteristic.get(j).getUuid().toString()));
-                            if (characteristic != null) {
-                                gatt.setCharacteristicNotification(characteristic, true);
-
-                            }
-                        }
-                    }
-                }
+//
+//                for(int i=0;i<supportedGattServices.size();i++){
+//
+//                    Log.e("AAAAA","1:BluetoothGattService UUID=:"+
+//                            supportedGattServices.get(i).getUuid());
+//
+////                    BluetoothGattService service = mbluetoothGatt.getService(UUID.fromString(supportedGattServices.get(i).getUuid().toString()));
+//
+//                    List<BluetoothGattCharacteristic> listGattCharacteristic=
+//                            supportedGattServices.get(i).getCharacteristics();
+//                    for(int j=0;j<listGattCharacteristic.size();j++){
+//
+//
+//                        if (service != null) {
+//                            characteristic = service.getCharacteristic(UUID.fromString(listGattCharacteristic.get(j).getUuid().toString()));
+//                            if (characteristic != null) {
+//
+//                                Log.e("a","2:   BluetoothGattCharacteristic UUID=:"
+//                                        +listGattCharacteristic.get(j).getUuid());
+//                                gatt.setCharacteristicNotification(characteristic, true);
+//
+//                            }
+//                        }
+//                    }
+//                }
 
             }else{
                 Log.e(TAG, "服务发现失败，错误码为:" + status);
@@ -205,7 +211,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 //           mbluetoothGatt.readCharacteristic(characteristic);
-            System.out.println(characteristic.getValue());
+
+            byte[] buff = new byte[1024];
+            StringBuffer sbuf = new StringBuffer();
+            for (int i = 0; i < buff.length; i++) {
+                sbuf.append(buff[i]);
+            }
+
+
+            System.out.println(str2HexStr(sbuf.toString()));
         }
 
 
