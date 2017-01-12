@@ -47,7 +47,31 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter = bluetoothManager.getAdapter();
         System.out.println("oncreat");
 
+
+//        if(ActivityCompat.checkSelfPermission(this, "")== PackageManager.PERMISSION_GRANTED){
+//            //需要findlocation
+//        }else {
+//            ActivityCompat.requestPermissions(this,new String[]{},11);
+//        }
+
+
     }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        boolean result = true;
+//        if(grantResults!= null){
+//            for(int frant:grantResults){
+//                if(frant != PackageManager.PERMISSION_GRANTED){
+//                    result = false;
+//                }
+//            }
+//        }
+//        if(result){
+//
+//        }
+//    }
 
     @Override
     protected void onResume() {
@@ -134,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.e(TAG, "成功发现服务");
 
-                BluetoothGattService service = mbluetoothGatt.getService(UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb"));
+                BluetoothGattService service = mbluetoothGatt.getService(UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb"));//0000fff6-0000-1000-8000-00805f9b34fb
                 characteristic = service.getCharacteristic(UUID.fromString("0000fff6-0000-1000-8000-00805f9b34fb"));
                 gatt.setCharacteristicNotification(characteristic, true);
 
@@ -210,16 +234,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-//           mbluetoothGatt.readCharacteristic(characteristic);
-
-            byte[] buff = new byte[1024];
-            StringBuffer sbuf = new StringBuffer();
-            for (int i = 0; i < buff.length; i++) {
-                sbuf.append(buff[i]);
+            final byte[] data = characteristic.getValue();
+            if (data != null && data.length > 0) {
+                final StringBuilder stringBuilder = new StringBuilder(data.length);
+                for (byte byteChar : data)
+                    stringBuilder.append(String.format("%02X ", byteChar));
+                Log.e("xiaozhang", "Data = " + stringBuilder.toString());
             }
-
-
-            System.out.println(str2HexStr(sbuf.toString()));
         }
 
 
