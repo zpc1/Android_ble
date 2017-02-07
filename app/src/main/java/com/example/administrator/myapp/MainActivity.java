@@ -1,5 +1,6 @@
 package com.example.administrator.myapp;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -11,12 +12,18 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,12 +55,53 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("oncreat");
 
 
-//        if(ActivityCompat.checkSelfPermission(this, "")== PackageManager.PERMISSION_GRANTED){
+        mayRequestLocation();
+
+        //        if(ActivityCompat.checkSelfPermission(this, "")== PackageManager.PERMISSION_GRANTED){
 //            //需要findlocation
 //        }else {
 //            ActivityCompat.requestPermissions(this,new String[]{},11);
 //        }
 
+
+    }
+
+    private static final int REQUEST_FINE_LOCATION=0;
+    private void mayRequestLocation() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            int checkCallPhonePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED){
+                //判断是否需要 向用户解释，为什么要申请该权限
+                if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION))
+                    Toast.makeText(this,"blue permission", Toast.LENGTH_SHORT).show();
+
+                ActivityCompat.requestPermissions(this ,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_FINE_LOCATION);
+                return;
+            }else{
+
+            }
+        } else {
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_FINE_LOCATION:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // The requested permission is granted.
+                    if (mScanning == false) {
+                        scanLeDevice(true);
+                    }
+                } else{
+                    // The user disallowed the requested permission.
+                }
+                break;
+
+        }
 
     }
 
